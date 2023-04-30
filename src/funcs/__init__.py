@@ -20,9 +20,3 @@ logger_handler.setFormatter(logger_formatter)
 
 logger.addHandler(logger_handler)
 
-# Make a file handler if the user has 'file_log' enabled
-file_handler = logging.FileHandler(os.path.join(sys.path[0], "saver.log"))
-file_handler.setLevel(logging.INFO)
-file_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-file_handler.setFormatter(file_format)
-logger.addHandler(file_handler)

@@ -80,7 +80,7 @@ class SAMPChatLogSaver:
 
 
     def save_log(self):
-        log = open(self.samp_path + '\\chatlog.txt', 'r')
+        log = open(os.path.join(self.samp_path, "chatlog.txt"), 'r')
         content = log.read()
 
         # Format the filename
@@ -104,12 +104,12 @@ class SAMPChatLogSaver:
         # We join it with '_' so we get a result like '127.0.0.1_7777'
         ip = "_".join(ip_str)
 
-        if not os.path.exists(self.log_path + '\\' + ip): # If the IP doesn't exist as a folder, create one
-            os.mkdir(self.log_path + '\\' + ip)
+        if not os.path.exists(os.path.join(self.log_path, ip)): # If the IP doesn't exist as a folder, create one
+            os.mkdir(os.path.join(self.log_path, ip))
 
         # Create the new log file and write the content in there and close the file
 
-        path = self.log_path + '\\' + ip + '\\' + fname
+        path = os.path.join(self.log_path, ip, fname)
 
         log_file = open(path, 'w')
         log_file.write(content)

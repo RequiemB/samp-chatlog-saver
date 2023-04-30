@@ -16,7 +16,7 @@ def generate_json(path: str):
     data["log_path"] = None
     data["windowed_instance"] = True
 
-    file = open("config.json", "w") 
+    file = open(path, "w") 
     json.dump(data, file, indent=4)
 
     return data
@@ -25,7 +25,6 @@ def retrieve_configuration(file: str): # Retrieves the configuration from the fi
     data = {}
     try:
         data = json.load(open(file, "r"))
-        print("jhelo", flush=True)
     except FileNotFoundError: # Create the file again if it wasn't found
         logger.warning(f" No configuration file was found. Generating a JSON file...")
         data = generate_json(file)
@@ -54,7 +53,7 @@ def retrieve_configuration(file: str): # Retrieves the configuration from the fi
                 config["samp_path"] = data["samp_path"]
 
     except KeyError: # If samp_path is not a key in the configuration, raise an error
-        logger.error("The path 'samp_path' was not found in the configuration. Check my GitHub page for instructions on how to configure the program. (https://www.github.com/RequiemB/SAMP-Chatlog-Saver)")
+        logger.error("The path 'samp_path' was not found in the configuration. Check my GitHub page for instructions on how to configure the program. (https://www.github.com/RequiemB/samp-chatlog-saver)")
         wait_until_response(wait_type=1)
 
     try: # Check if it's a valid SAMP directory
@@ -86,7 +85,7 @@ def retrieve_configuration(file: str): # Retrieves the configuration from the fi
 
 
     except KeyError: # If log_path is not a key in the configuration, raise an error
-        logger.error("The path 'log_path' was not found in the configuration. Check my GitHub page for instructions on how to configure the program. (https://www.github.com/RequiemB/SAMP-Chatlog-Saver)")
+        logger.error("The path 'log_path' was not found in the configuration. Check my GitHub page for instructions on how to configure the program. (https://www.github.com/RequiemB/samp-chatlog-saver)")
         wait_until_response(wait_type=1)
 
     try:
