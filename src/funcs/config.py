@@ -27,9 +27,10 @@ def request_path(dir_type):
     except:
         path = filedialog.askdirectory(title=f"Select your {dir_type} folder")
 
-    if path is None:
-        logger.warning(f"The prompt dialog was closed by the user. Chatlog saver cannot run with an invaild {dir_type} path.")
-        wait_until_response(wait_type=1)
+    if dir_type == "SAMP":
+        if path == "":
+            logger.warning(f"The prompt dialog was closed by the user. Chatlog saver cannot run with an invaild {dir_type} path.")
+            wait_until_response(wait_type=1)
 
     return path
 
@@ -41,8 +42,10 @@ def generate_json(path: str):
     except:
         pass
 
+    json_file = open(path, "w+")
+
     # The default path to be used in case the user doesn't select the dirs
-    default_path = default_path = f"{os.getenv('HOMEDRIVE')}/{os.getenv('HOMEPATH')}/Documents/GTA San Andreas User Files/SAMP/"
+    default_path = f"{os.getenv('HOMEDRIVE')}/{os.getenv('HOMEPATH')}/Documents/GTA San Andreas User Files/SAMP/"
 
     data = {}
 
@@ -51,14 +54,16 @@ def generate_json(path: str):
     samp_path = request_path("SAMP")
     log_path = request_path("SAMP Log")
 
-    if samp_path is None:
+    data["samp_path"] = samp_path
+    data["log_path"] = log_path
+
+    if samp_path == "":
         data["samp_path"] = default_path
 
-    if log_path is None:
+    if log_path == "":
         data["log_path"] = os.path.join(default_path, "logs")
 
-    file = open(path, "w") 
-    json.dump(data, file, indent=4)
+    json.dump(data, json_file, indent=4)
 
     return data
 
@@ -94,38 +99,45 @@ def retrieve_configuration(file: str): # Retrieves the configuration from the fi
 
     except KeyError: # If samp_path is not a key in the configuration, raise an error
         logger.error("The path 'samp_path' was not found in the configuration. Generating another one...")
+        generate_json(file)
         wait_until_response(wait_type=1)
 
     try: # Check if it's a valid SAMP directory
         if not os.path.exists(config["samp_path"]+'\\sa-mp.cfg'):
-            logger.error(f" The path used is not a valid SA-MP User Files path. Double-check the path again.\n Path: {config['samp_path']}.")
-            wait_until_response(wait_type=1)
+            logger.error(f" The path used is not a valid SA-MP User Files path. Select the path again.\n Path: {config['samp_path']}.")
+            path = request_path("SAMP")
+            config["samp_path"] = path
     except Exception:
-        logger.warning(" An exception has occured. Restart the program.")
+        logger.warning("An exception has occured. Restart the program.")
         wait_until_response(wait_type=1)
 
     try:
-        if data["log_path"] is None: # If log_path is not set, use the default log path
-            config["log_path"] = default_path + 'logs/'
-            try: # Create the default logs folder
-                os.mkdir(config["log_path"])
-            except FileExistsError: # Ignore if the folder already exists
-                pass
-            logger.info(f"No log path was found in the configuration, using the default log path: ({config['log_path']})")
+        if data["log_path"] is None: # If log_path is not set, prompt the user to select a directory
+            logger.warning(f"No log path was set. Select the path.")
+            path = request_path("SAMP Log")
+            config["log_path"] = path
+            if path == "": # If the user didn't give a path, use the default one
+                config["log_path"] = os.path.join(config["samp_path"], "logs")
+                try: # Create the default logs folder
+                    os.mkdir(config["log_path"])
+                except FileExistsError: # Ignore if the folder already exists
+                    pass
         else:
             if not os.path.exists(data["log_path"]): # If the path given is invalid, create that folder
                 try:
                     os.mkdir(data["log_path"])
                     config["log_path"] = data["log_path"]
                 except:
-                    logger.error(f" An error occured while attempting to create the folder: {data['log_path']}. Try creating it yourself.")
-                    wait_until_response(wait_type=1)
+                    logger.error(f" An error occured while attempting to create the logging folder: {data['log_path']}. Choose the path yourself.")
+                    path = request_path("SAMP Log")
+                    config["log_path"] = path
             else: # If the path exists, store it into the config
                 config["log_path"] = data["log_path"]
 
 
     except KeyError: # If log_path is not a key in the configuration, raise an error
-        logger.error("The path 'log_path' was not found in the configuration. Check my GitHub page for instructions on how to configure the program. (https://www.github.com/RequiemB/samp-chatlog-saver)")
+        logger.error("The path 'log_path' was not found in the configuration. Regenerating another configuration... Run the program again.")
+        generate_json(file)
         wait_until_response(wait_type=1)
 
     try:
@@ -137,9 +149,11 @@ def retrieve_configuration(file: str): # Retrieves the configuration from the fi
     except KeyError: # The var 'windowed_instance' is not a key in the configuration
         config["windowed_instance"] = True # It's true by default
         data["windowed_instance"] = True
-        json.dump(open(file, "w"), data, indent=4) # Dump the new added var into the file
+        json.dump(data, open(file, "w"), indent=4) # Dump the new added var into the file
 
     assert config is not {} # Make sure config is not an empty dict
+
+    json.dump(config, open(file, "w"), indent=4)
 
     # We've added all the config into the dict, now we can return the dict
     return config
