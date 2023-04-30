@@ -1,8 +1,29 @@
 import json
 import os
 
+from tkinter import Tk, filedialog
 from .saver import wait_until_response
 from . import logger
+
+# Create Tkinter instance for folder prompt
+window = Tk()
+window.withdraw()
+
+window.attributes('-topmost')
+
+# Get the SAMP path
+def request_path():
+
+    default_path = f"{os.getenv('HOMEDRIVE')}/{os.getenv('HOMEPATH')}/Documents/GTA San Andreas User Files/SAMP/"
+
+    path: str
+    try:
+        path = filedialog.askdirectory(path)
+    except:
+        pass
+
+    return path
+    
 
 def generate_json(path: str):
     try:
@@ -12,9 +33,9 @@ def generate_json(path: str):
 
     data = {}
 
-    data["samp_path"] = None
-    data["log_path"] = None
     data["windowed_instance"] = True
+
+    samp_path = request_path()
 
     file = open(path, "w") 
     json.dump(data, file, indent=4)
