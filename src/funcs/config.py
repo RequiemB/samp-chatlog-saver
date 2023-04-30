@@ -19,6 +19,8 @@ def generate_json(path: str):
     file = open("config.json", "w") 
     json.dump(data, file, indent=4)
 
+    return data
+
 def retrieve_configuration(file: str): # Retrieves the configuration from the file, i.e. the paths, the prefrences 
     data = {}
     try:
@@ -26,12 +28,10 @@ def retrieve_configuration(file: str): # Retrieves the configuration from the fi
         print("jhelo", flush=True)
     except FileNotFoundError: # Create the file again if it wasn't found
         logger.warning(f" No configuration file was found. Generating a JSON file...")
-        generate_json(file)
-        data = json.load(open(file, "r"))
+        data = generate_json(file)
     except json.decoder.JSONDecodeError: # The file isn't in the JSON format. Make another one
         logger.warning(f" {file} is not in the JSON format. Regenerating another one...")
-        generate_json(file)
-        data = json.load(open(file, "r"))
+        data = generate_json(file)
     except Exception as e: # An Exception has occured. Catch it and log it
         print(f"An error occured while opening the file. Error Info: {e.errno}")
         wait_until_response(wait_type=1)
