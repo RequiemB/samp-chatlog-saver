@@ -48,7 +48,7 @@ class SAMPChatLogSaver:
 
     def run(self): # To run the program
         # Print the config into the console
-        print(f"SAMP Chatlog Saver is running with the following configuration:\n   SAMP Path: {self.samp_path}\n   Log Path: {self.log_path}\n   Windowed Instance: {self.windowed}.", flush=True)
+        logger.warning(f"SAMP Chatlog Saver is running with the following configuration:\n   SAMP Path: {self.samp_path}\n   Log Path: {self.log_path}\n   Windowed Instance: {self.windowed}.")
 
         # Delay the closing for the user to double-check
         time.sleep(2)
@@ -61,7 +61,7 @@ class SAMPChatLogSaver:
             if is_process_running('gta_sa.exe'):
                 break # Break the loop if it's running
             else:
-                time.sleep(10)
+                time.sleep(5)
 
         print("GTA San Andreas has initalized. Waiting for the program termination.", flush=True)
 
@@ -74,7 +74,10 @@ class SAMPChatLogSaver:
         self.save_log() # Save the log
 
         if not self.windowed:
-            sys.exit() # Exit the program if 
+            sys.exit() # Exit the program if it's not windowed
+        else:
+            self.run() # Run the program again if it's windowed
+
 
     def save_log(self):
         log = open(self.samp_path + '\\chatlog.txt', 'r')
@@ -112,6 +115,6 @@ class SAMPChatLogSaver:
         log_file.write(content)
         log_file.close()
 
-        logger.info(f"Log has been saved to {path}.")
+        logger.warning(f"Log has been saved to {path}.")
 
         return True

@@ -4,20 +4,39 @@ import os
 from .saver import wait_until_response
 from . import logger
 
+def generate_json(path: str):
+    try:
+        os.remove(path)
+    except:
+        pass
+
+    data = {}
+
+    data["samp_path"] = None
+    data["log_path"] = None
+    data["windowed_instance"] = True
+
+    file = open("config.json", "w") 
+    json.dump(data, file, indent=4)
+
 def retrieve_configuration(file: str): # Retrieves the configuration from the file, i.e. the paths, the prefrences 
+    data = {}
     try:
         data = json.load(open(file, "r"))
-    except FileNotFoundError: # Error is being raised because the file was not found
-        logger.error(f" No configuration file was found. Double check if '{file}' is in the same directory as the program.")
-        wait_until_response(wait_type=1)
-    except json.decoder.JSONDecodeError:
-        logger.info(f" {file} is not in the JSON format. Re-download it from https://www.github.com/RequiemB/SAMP-Chatlog-Saver.")
-        wait_until_response(wait_type=1)
+        print("jhelo", flush=True)
+    except FileNotFoundError: # Create the file again if it wasn't found
+        logger.warning(f" No configuration file was found. Generating a JSON file...")
+        generate_json(file)
+        data = json.load(open(file, "r"))
+    except json.decoder.JSONDecodeError: # The file isn't in the JSON format. Make another one
+        logger.warning(f" {file} is not in the JSON format. Regenerating another one...")
+        generate_json(file)
+        data = json.load(open(file, "r"))
     except Exception as e: # An Exception has occured. Catch it and log it
         print(f"An error occured while opening the file. Error Info: {e.errno}")
         wait_until_response(wait_type=1)
     
-    assert data is not None # Make sure that data is not an empty variable
+    assert data is not {} # Make sure that data is not an empty variable
 
     config = {} # Create a dict to store the formatted data
 
