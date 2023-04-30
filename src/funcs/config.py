@@ -1,7 +1,7 @@
 import json
 import os
 
-from tkinter import Tk, filedialog
+from tkinter import Tk, filedialog, PhotoImage
 from .saver import wait_until_response
 from . import logger
 
@@ -11,19 +11,29 @@ window.withdraw()
 
 window.attributes('-topmost')
 
-# Get the SAMP path
-def request_path():
+# Set the GUI icon
 
-    default_path = f"{os.getenv('HOMEDRIVE')}/{os.getenv('HOMEPATH')}/Documents/GTA San Andreas User Files/SAMP/"
+icon = PhotoImage(file="./icon.png")
+window.iconphoto(False, icon)
+
+# Get the SAMP path
+def request_path(dir_type):
+
+    doc_path = f"{os.getenv('HOMEDRIVE')}/{os.getenv('HOMEPATH')}/Documents/"
 
     path: str
     try:
-        path = filedialog.askdirectory(path, title="Select your SAMP directory")
+        path = filedialog.askdirectory(initialdir=doc_path, title=f"Select your {dir_type} folder")
     except:
-        pass
+        path = filedialog.askdirectory(title=f"Select your {dir_type} folder")
+
+    if path is None:
+        logger.warning(f"The prompt dialog was closed by the user. Chatlog saver cannot run with an invaild {dir_type} path.")
+        wait_until_response(wait_type=1)
 
     return path
-    
+
+# Generate a JSON configuration file
 
 def generate_json(path: str):
     try:
@@ -31,11 +41,21 @@ def generate_json(path: str):
     except:
         pass
 
+    # The default path to be used in case the user doesn't select the dirs
+    default_path = default_path = f"{os.getenv('HOMEDRIVE')}/{os.getenv('HOMEPATH')}/Documents/GTA San Andreas User Files/SAMP/"
+
     data = {}
 
     data["windowed_instance"] = True
 
-    samp_path = request_path()
+    samp_path = request_path("SAMP")
+    log_path = request_path("SAMP Log")
+
+    if samp_path is None:
+        data["samp_path"] = default_path
+
+    if log_path is None:
+        data["log_path"] = os.path.join(default_path, "logs")
 
     file = open(path, "w") 
     json.dump(data, file, indent=4)
@@ -59,22 +79,21 @@ def retrieve_configuration(file: str): # Retrieves the configuration from the fi
     assert data is not {} # Make sure that data is not an empty variable
 
     config = {} # Create a dict to store the formatted data
-
-    default_path = f"{os.getenv('HOMEDRIVE')}/{os.getenv('HOMEPATH')}/Documents/GTA San Andreas User Files/SAMP/"
  
     try: # Try to access the data inside
-        if data["samp_path"] is None: # If samp_path is not set, use the default SAMP path
-            config["samp_path"] = default_path
-            logger.info(f"No SAMP path was found in the configuration, using the default SAMP path: ({default_path})")
+        if data["samp_path"] is None: # If samp_path is not set, prompt the user to select the path again
+            path = request_path("SAMP")
+            config["samp_path"] = path
+            logger.warning(f"No SAMP path was found in the configuration, select your desired path.")
         else:
-            if not os.path.exists(data["samp_path"]): # If the path given is invalid, raise an error
-                logger.error(f"The SAMP User files path ({data['samp_path']}) is not valid. Try checking the path again.")
-                wait_until_response(wait_type=1)
+            if not os.path.exists(data["samp_path"]): # If the path given is invalid, prompt the user to select the path again
+                logger.error(f"The SAMP User files path ({data['samp_path']}) is not valid. select the path again.")
+                config["samp_path"] = request_path("SAMP")
             else:  # If the path is valid, store it into the config
                 config["samp_path"] = data["samp_path"]
 
     except KeyError: # If samp_path is not a key in the configuration, raise an error
-        logger.error("The path 'samp_path' was not found in the configuration. Check my GitHub page for instructions on how to configure the program. (https://www.github.com/RequiemB/samp-chatlog-saver)")
+        logger.error("The path 'samp_path' was not found in the configuration. Generating another one...")
         wait_until_response(wait_type=1)
 
     try: # Check if it's a valid SAMP directory
