@@ -18,7 +18,7 @@ def request_path():
 
     path: str
     try:
-        path = filedialog.askdirectory(path)
+        path = filedialog.askdirectory(path, title="Select your SAMP directory")
     except:
         pass
 
