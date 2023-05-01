@@ -6,7 +6,7 @@ A chatlog saver for the multiplayer modification of GTA San Andreas, San Andreas
 
 ## Usage
   
-In order to use the program, head over to the [Releases](https://github.com/RequiemB/samp-chatlog-saver/releases/tag/v.1.0.0) page and install the executable from the latest release. It's recommended to make a new folder and put it inside there. After downloading, run the program once to generate the configuration. A box will pop up asking for your SAMP path and your preferred log path, set it as you like. That's it, you can now join a server and when you quit, the chatlog will be saved.
+In order to use the program, head over to the [Releases](https://github.com/RequiemB/samp-chatlog-saver/releases/tag/v.1.0.0) page and install the executable from the latest release. It's recommended to make a new folder and put it inside there. After downloading, run the program once to generate the configuration (if there isn't one). A box will pop up asking for your SAMP path and your preferred log path, set it as you like. That's it, you can now join a server and when you quit, the chatlog will be saved.
 
 ## Configuration 
 
@@ -37,7 +37,7 @@ If you do not want a console window when you run the program, edit the file as f
   "windowed_instance": false
 }
 ```
-**Note: It's recommended to add any more configurations or edit the variables other than 'windowed_instance' yourself, if you did and the program isn't running correctly, just delete the file and the program will generate another one.**
+**Note: It's not recommended to add any more configuration variables or edit the current variables other than 'windowed_instance' yourself, if you did and the program isn't running correctly, just delete the file and the program will generate another one.**
 
 ## Running via Python
 
@@ -45,7 +45,8 @@ In order to run the program via Python, run the following commands in your conso
 
 ```sh
 git clone https://github.com/RequiemB/samp-chatlog-saver.git
-cd ./samp-chatlog-saver
+cd ./samp-chatlog-saver/src
+pip install -r requirements.txt
 python main.py
 ```
 
