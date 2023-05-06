@@ -45,8 +45,9 @@ In order to run the program via Python, run the following commands in your conso
 
 ```sh
 git clone https://github.com/RequiemB/samp-chatlog-saver.git
-cd ./samp-chatlog-saver/src
+cd ./samp-chatlog-saver
 pip install -r requirements.txt
+cd src
 python main.py
 ```
 
