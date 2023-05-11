@@ -6,7 +6,7 @@ A chatlog saver for the multiplayer modification of GTA San Andreas, San Andreas
 
 ## Usage
   
-In order to use the program, head over to the [Releases](https://github.com/RequiemB/samp-chatlog-saver/releases/tag/v.1.0.0) page and install the executable from the latest release. It's recommended to make a new folder and put it inside there. After downloading, run the program once to generate the configuration (if there isn't one). A box will pop up asking for your SAMP path and your preferred log path, set it as you like. That's it, you can now join a server and when you quit, the chatlog will be saved.
+In order to use the program, head over to the [Releases](https://github.com/RequiemB/samp-chatlog-saver/releases/tag/v1.0.0) page and install the executable from the latest release. It's recommended to make a new folder and put it inside there. After downloading, run the program once to generate the configuration (if there isn't one). A box will pop up asking for your SAMP path and your preferred log path, set it as you like. That's it, you can now join a server and when you quit, the chatlog will be saved.
 
 ## Configuration 
 
